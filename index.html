@@ -148,6 +148,7 @@ function pool(){const p=[...BASE_POOL];STATIONS.forEach(s=>{if(isOpen(s.n)&&s.u&
 
 /* ---------- sonido ---------- */
 let AC=null;
+document.addEventListener("visibilitychange",()=>{try{if(!AC)return;if(document.hidden)AC.suspend();else AC.resume()}catch(e){}});
 function beep(f,d=0.07,type='square',v=0.04){tone(f,d,type,v)}
 const whistle=()=>{tone(392,0.7,'sine',0.05,{slide:330,atk:0.05});tone(466,0.75,'sine',0.035,{at:0.04,slide:392,atk:0.05})};
 /* motor de sonido: todo sintetizado, cada vagón tiene su voz */
@@ -155,7 +156,7 @@ let MASTER=null,NOISE=null,voices=0;
 function ac(){if(meta.muted)return null;try{if(!AC){AC=new AudioContext();const comp=AC.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=6;MASTER=AC.createGain();MASTER.gain.value=0.9;MASTER.connect(comp).connect(AC.destination);
   const b=AC.createBuffer(1,AC.sampleRate,AC.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;NOISE=b}
   if(!AC._amb){AC._amb=1;ambience()}
-  if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+  if(AC.state==='suspended'&&!document.hidden)AC.resume();return AC}catch(e){return null}}
 function ambience(){try{const t=AC.currentTime,gn=AC.createGain(),lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=180;gn.gain.value=0.035;
   [55,55.6,82.4].forEach(f=>{const o=AC.createOscillator();o.type='sawtooth';o.frequency.value=f;o.connect(lp);o.start(t)});
   const lfo=AC.createOscillator(),lg=AC.createGain();lfo.frequency.value=0.07;lg.gain.value=0.02;lfo.connect(lg).connect(gn.gain);lfo.start(t);
