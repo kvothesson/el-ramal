@@ -133,11 +133,11 @@ const BOSSES=[
   {k:'pesado',n:'Carga pesada',d:'La carga cuenta la mitad.'},
 ];
 const ROUTES=[
-  {k:'principal',n:'Vía principal',d:'Sin sorpresas.'},
-  {k:'tormenta',n:'Tormenta',bonus:4,d:'Carga ×0,75. Premio +4 boletos.'},
-  {k:'contrabando',n:'Contrabando',q:1.15,d:'Cuota ×1,15. La próxima tienda trae un raro seguro.'},
-  {k:'viamuerta',n:'Vía muerta',q:0.6,noreward:1,d:'Cuota ×0,6. Sin premio.'},
-  {k:'feria',n:'Feria',d:'En la próxima tienda todo sale 1 boleto menos.'},
+  {k:'principal',n:'Vía principal',d:'La vuelta normal: ni ayuda ni castigo.',fx:[['NORMAL','dim']]},
+  {k:'tormenta',n:'Tormenta',bonus:4,d:'Cada parada junta un 25% menos de carga, pero al terminar cobrás 4 boletos más.',fx:[['CARGA -25%','bad'],['+4','ok',1]]},
+  {k:'contrabando',n:'Contrabando',q:1.15,d:'La cuota sube un 15%, pero el próximo taller trae seguro un vagón raro o mejor.',fx:[['VAGÓN RARO','ok']]},
+  {k:'viamuerta',n:'Vía muerta',q:0.6,noreward:1,d:'La cuota baja a poco más de la mitad, pero al terminar no cobrás nada. Sirve para salvar una vuelta floja.',fx:[['SIN COBRO','bad']]},
+  {k:'feria',n:'Feria',d:'Vuelta normal, y en el próximo taller cada vagón sale 1 boleto menos.',fx:[['TALLER -1','ok',1]]},
 ];
 
 function loadMeta(){try{const m=JSON.parse(localStorage.getItem('el-ramal-meta'));if(m&&Array.isArray(m.open))return m}catch(e){}return{open:[],best:0,runs:0,muted:false}}
@@ -357,6 +357,7 @@ function endLap(){
     render();S.overT=0;const dead=S;setTimeout(()=>{if(S===dead&&APP==='game')gameOver()},1500);
   }
 }
+function routeQuota(r){return Math.round(quotaFor(S.lap)*(r.q||1)*(S.nextBoss?1.15:1))}
 function pickRoutes(){const r=ROUTES.slice();const a=r.splice(Math.floor(Math.random()*r.length),1)[0];const b=rnd(r);return[a,b]}
 function rollShop(forceRare){
   const p=pool(),w={'común':60,'rara':30,'legendaria':7};
@@ -753,9 +754,13 @@ function infoPanel(){
   // salidas del taller: siempre a la derecha
   let right=SW-4;
   if(S.phase==='shop'){
-    S.routes.slice().reverse().forEach((r,ri)=>{const w=Math.max(70,tw(r.n)+8);right-=w;const i=S.routes.length-1-ri;
-      box(right,y+3,w,h-6,'#14200f','#3f6e58','#5c8e6a');txtC('SALIR',right+w/2,y+6,C.dim,1,null);txtC(r.n,right+w/2,y+16,C.ok,1,null);
-      hit(right,y+3,w,h-6,{t:'Salir por '+r.n,d:r.d},()=>beginLap(r));S._exit=[right,y+3,(S._exit&&S._exit[0]<right?S._exit[2]:w)];right-=3});
+    const q0=routeQuota(ROUTES[0]);
+    S.routes.slice().reverse().forEach((r,ri)=>{const q=routeQuota(r),qs='CUOTA '+fmt(q),fxw=(r.fx||[]).reduce((a,f)=>a+tw(f[0])+(f[2]?10:0)+6,-6);
+      const w=Math.max(84,tw(r.n)+8,tw(qs)+8,fxw+8);right-=w;const i=S.routes.length-1-ri,hov=H&&H.route===r.k;
+      box(right,y+3,w,h-6,hov?'#1c2c14':'#14200f',hov?C.ok:'#3f6e58','#5c8e6a');txtC(r.n,right+w/2,y+5,C.ok,1,null);
+      txtC(qs,right+w/2,y+14,q<q0?C.ok:q>q0?C.bad:C.dim,1,null);
+      let fx=right+(w-fxw)/2;(r.fx||[]).forEach(([t,c,tk])=>{const col=C[c]||C.dim;txt(t,fx,y+23,col,1,null);fx+=tw(t);if(tk){fx+=2;ticket(fx,y+24);fx+=8}fx+=6});
+      hit(right,y+3,w,h-6,{t:'Salir por '+r.n,d:r.d,route:r.k},()=>beginLap(r));S._exit=[right,y+3,(S._exit&&S._exit[0]<right?S._exit[2]:w)];right-=3});
     S._exit=[right+3,y+3,SW-4-right-3,h-6];
     if(S.sel!==null&&S.train[S.sel]){const w=S.train[S.sel],bw=74;right-=bw;box(right,y+3,bw,h-6,'#2a0c10',C.blood);txtC('VENDER',right+bw/2,y+8,C.bad,1,null);txtC('+'+sellVal(w),right+bw/2,y+18,C.gold,1,null);
       hit(right,y+3,bw,h-6,{t:'Vender '+DEFS[w.k].n,d:'Te devuelve '+sellVal(w)+' boletos. El Chatarrero crece con cada venta.'},()=>sell(S.sel));right-=3}
@@ -1004,7 +1009,7 @@ function loadRun(){try{const j=JSON.parse(localStorage.getItem('el-ramal-run'));
   if(S.phase==='shop'){S.cm=[0,1];return true}
   S.nextBoss=S.boss||null;S.lapScore=0;beginLap(S.route);return true}catch(e){return false}}
 setInterval(()=>{if(S&&S.phase==='shop')saveRun()},1500);
-window.__ramal={get APP(){return APP},set APP(v){APP=v},goTitle,newGame,startRun,playCine,CINE_INTRO,CINE_END,get S(){return S},meta,evaluate,quotaFor,DEFS,endLap,beginLap,newRun,rollShop,evStep,render,renderPanel,VOICE,buy,owned,syn,lapRun,TILES,pickTile,placeTile,startEval,draw,get MODAL(){return MODAL},closeModal};
+window.__ramal={ROUTES,get APP(){return APP},set APP(v){APP=v},goTitle,newGame,startRun,playCine,CINE_INTRO,CINE_END,get S(){return S},meta,evaluate,quotaFor,DEFS,endLap,beginLap,newRun,rollShop,evStep,render,renderPanel,VOICE,buy,owned,syn,lapRun,TILES,pickTile,placeTile,startEval,draw,get MODAL(){return MODAL},closeModal};
 const BOT=location.search.includes('bot');
 if(BOT){APP='game';newRun('carga')}else goTitle();
 requestAnimationFrame(tick);
