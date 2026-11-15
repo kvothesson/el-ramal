@@ -102,6 +102,8 @@ function lapRun(tr,tk){
     if(o.tile==='farol'){nx+=1;continue}
     if(!o.tile)continue;
     o.add=carry;carry=0;o.x=nx*(o.tile==='quiniela'?3.5:1);nx=1;
+    // en el taller la vista previa ya cuenta al inspector que sube en la próxima vuelta
+    if(S.phase==='shop'&&S.nextBoss)o.boss=S.nextBoss.k;
     const v=runStation(tr,o,false);
     if(o.tile==='deposito')carry+=v*1.5;else tot+=v;
   }
@@ -226,7 +228,7 @@ function beginLap(route){
 
 /* ---------- cálculo de una estación ---------- */
 function evaluate(tr=S.train,live=true,o={}){
-  const ev=[],boss=live&&S.boss&&S.boss.k;
+  const ev=[],boss=o.boss||(live&&S.boss&&S.boss.k);
   const c={carga:0,mult:o.m0||1,tr,L:1,B:1};
   let src=null;
   const push=(i,txt,cls)=>ev.push({i:o.map&&i>=0?o.map[i]:i,txt,cls,carga:c.carga,mult:c.mult,k:src,v:c._v});
@@ -1010,7 +1012,7 @@ function loadRun(){try{const j=JSON.parse(localStorage.getItem('el-ramal-run'));
   if(S.phase==='shop'){S.cm=[0,1];return true}
   S.nextBoss=S.boss||null;S.lapScore=0;beginLap(S.route);return true}catch(e){return false}}
 setInterval(()=>{if(S&&S.phase==='shop')saveRun()},1500);
-window.__ramal={ROUTES,get APP(){return APP},set APP(v){APP=v},goTitle,newGame,startRun,playCine,CINE_INTRO,CINE_END,get S(){return S},meta,evaluate,quotaFor,DEFS,endLap,beginLap,newRun,rollShop,evStep,render,renderPanel,VOICE,buy,owned,syn,lapRun,TILES,pickTile,placeTile,startEval,draw,get MODAL(){return MODAL},closeModal};
+window.__ramal={ROUTES,routeQuota,get APP(){return APP},set APP(v){APP=v},goTitle,newGame,startRun,playCine,CINE_INTRO,CINE_END,get S(){return S},meta,evaluate,quotaFor,DEFS,endLap,beginLap,newRun,rollShop,evStep,render,renderPanel,VOICE,buy,owned,syn,lapRun,TILES,pickTile,placeTile,startEval,draw,get MODAL(){return MODAL},closeModal};
 const BOT=location.search.includes('bot');
 if(BOT){APP='game';newRun('carga')}else goTitle();
 requestAnimationFrame(tick);

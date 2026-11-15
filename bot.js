@@ -39,7 +39,9 @@ window.botRuns=function(N=15){
       S.phase='travel';R.endLap();
       if(S.phase==='over'){results.push(S.lap);break}
       botShop(S);
-      R.beginLap(S.routes.find(r=>r.k==='principal')||S.routes[0]);
+      // como un jugador: si la principal no alcanza, se salva con la vía muerta
+      const est=R.lapRun(S.train,S.track),pr=S.routes.find(r=>r.k==='principal')||S.routes[0],vm=S.routes.find(r=>r.k==='viamuerta');
+      R.beginLap(vm&&est<R.routeQuota(pr)?vm:pr);
       if(S.lap>40){results.push(40);break}
     }
   }
