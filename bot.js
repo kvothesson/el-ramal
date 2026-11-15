@@ -11,7 +11,10 @@ function botShop(S){
     S.shop.forEach((o,i)=>{if(o.bought)return;if(Math.max(1,R.DEFS[o.k].p-S.discount)>S.money)return;
       const ow=R.owned(o.k);let t;
       if(ow)t=S.train.map(w=>w===ow?{...w,lv:(w.lv||1)+1}:w);
-      else if(S.train.length-1<S.slots){const w={k:o.k,s:{}};R.DEFS[o.k].init&&R.DEFS[o.k].init(w);t=[...S.train,w]}
+      else if(S.train.length-1<S.slots){
+        // probar todos los lugares: la Carbonera no rinde al final y el bot nunca la compraba
+        const w={k:o.k,s:{}};R.DEFS[o.k].init&&R.DEFS[o.k].init(w);let bv=-1;
+        for(let p=1;p<=S.train.length;p++){const c=S.train.slice();c.splice(p,0,w);const v=per(c);if(v>bv){bv=v;t=c}}}
       else return;
       const v=per(t);if(v>b*1.02){best=i;b=v}});
     if(best===null){

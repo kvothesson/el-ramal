@@ -50,8 +50,8 @@ const DEFS={
   cantina:{n:'Cantina',ic:'🍷',r:'común',p:5,col:'#7a2c4a',d:'+1 mult por cada tipo distinto de vagón',fire:(c,w,ti,hi)=>c.addM(hi,new Set(c.tr.map(x=>x.k)).size)},
   pasajeros:{n:'Pasajeros',ic:'🧳',r:'común',p:4,col:'#4f7a52',d:w=>`+${w.s.p} mult. Sube 1 pasajero por vuelta`,init:w=>w.s.p=2,fire:(c,w,ti,hi)=>c.addM(hi,w.s.p),lapEnd:w=>{w.s.p+=1}},
   guarda:{n:'Guarda',ic:'🎫',r:'común',p:4,col:'#3d4a7a',d:'+1 mult. +2 boletos al final de cada vuelta',fire:(c,w,ti,hi)=>c.addM(hi,1),lapEnd:w=>{S.money+=2;S.extra+=2}},
-  carbonera:{n:'Carbonera',ic:'⚫',r:'rara',p:6,col:'#222',d:'El vagón de atrás se activa una vez más'},
-  espejo:{n:'Espejo',ic:'🔁',r:'rara',p:7,col:'#9fb6c8',d:'Copia al vagón de adelante'},
+  carbonera:{n:'Carbonera',ic:'⚫',r:'rara',p:5,col:'#222',d:'El vagón de atrás se activa dos veces más'},
+  espejo:{n:'Espejo',ic:'🔁',r:'rara',p:5,col:'#9fb6c8',d:'Copia al vagón de adelante'},
   dinamita:{n:'Dinamita',ic:'🧨',r:'rara',p:5,col:'#c22',d:w=>`×3 mult. Explota en ${w.s.left} estaciones`,init:w=>w.s.left=8,fire:(c,w,ti,hi)=>c.xM(hi,3),stationEnd:w=>{w.s.left--;if(w.s.left<=0)return 'boom'}},
   senal:{n:'Señal',ic:'🚦',r:'rara',p:6,col:'#2f7a3a',d:'×2 a la carga que vas juntando',fire:(c,w,ti,hi)=>c.xC(hi,2)},
   postal:{n:'Correo',ic:'✉️',r:'rara',p:6,col:'#b8862f',d:'+3 carga por cada boleto que tenés',fire:(c,w,ti,hi)=>c.addC(hi,3*S.money)},
@@ -249,7 +249,7 @@ function evaluate(tr=S.train,live=true,o={}){
       const reps=trig[i]*(tr[i].k==='espejo'?(tr[i].lv||1):1);
       for(let t=0;t<reps;t++){
         if(t>0)push(i,'¡otra vez!','r');
-        if(tk==='carbonera'){if(i+1<tr.length){trig[i+1]+=L;push(i,'▶ +'+L+' al de atrás','r')}else c.nada(i);continue}
+        if(tk==='carbonera'){if(i+1<tr.length){trig[i+1]+=L+1;push(i,'▶ +'+(L+1)+' al de atrás','r')}else c.nada(i);continue}
         if(tk==='descarrilado'){if(i===tr.length-1&&pass===0&&!c.derail){c.derail=1;passes+=Math.min(3,L);push(i,L>1?'¡DESCARRILA ×'+L+'!':'¡DESCARRILA!','r')}else c.nada(i);continue}
         DEFS[tk].fire(c,tr[ti],ti,i);
       }
@@ -653,7 +653,7 @@ function scene(dt){
   if(S.phase==='shop')shop(); else sceneText();
 }
 function sceneText(){
-  if(S.bossCard>0){S.bossCard-=1/60;const t1='SUBE UN INSPECTOR: '+S.boss.n,t2=S.boss.d,w=Math.max(tw(t1),tw(t2))+16;
+  if(S.bossCard>0&&S.boss){S.bossCard-=1/60;const t1='SUBE UN INSPECTOR: '+S.boss.n,t2=S.boss.d,w=Math.max(tw(t1),tw(t2))+16;
     box((SW-w)/2,SY+40,w,26,'#1e0810',C.blood,'#560c18');txtC(t1,SW/2,SY+45,C.mult,1,null);txtC(t2,SW/2,SY+55,C.txt,1,null)}
   const rule=S.boss?'INSPECCIÓN: '+S.boss.n+'. '+S.boss.d:(S.route&&S.route.k!=='principal'?S.route.n+': '+S.route.d:'');
   if(rule)txt(rule,4,SY+3,C.sick);
