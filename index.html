@@ -62,7 +62,7 @@ body{display:flex;align-items:center;justify-content:center}
 </script>
 </head>
 <body>
-<noscript><div class="sinjs"><div>
+<div class="sinjs"><div>
 <h1>El Ramal</h1>
 <p>El Ramal es un roguelite incremental de pixel art y horror que se juega gratis en el navegador. Un tren fantasma sigue andando por un ramal que cerró en 1993. El tren no se enteró.</p>
 <h2>Cómo se juega</h2>
@@ -70,7 +70,8 @@ body{display:flex;align-items:center;justify-content:center}
 <p>Controles: todo con el mouse (señalá cualquier cosa y abajo se explica qué hace), Esc para pausar y F para pantalla completa. La partida se guarda sola.</p>
 <p>Es un juego de <a href="https://kvothesson.com/">Kvothesson</a>, del Universo Austral. Gratis, sin cuenta y sin instalar nada.</p>
 <p class="aviso">Para jugar hace falta tener JavaScript activado.</p>
-</div></div></noscript>
+</div></div>
+<script>document.querySelector(".sinjs").remove()</script>
 <canvas id="screen" width="480" height="270"></canvas>
 <div id="legacy"><div id="carga"></div><div id="mult"></div><div id="bar"></div><div id="barfill"></div><div id="bartxt"></div><div id="rule"></div><div id="train"></div><div id="panel"></div><div id="ovl"></div><div id="ovlc"></div><div id="toast"></div></div>
 <script>
