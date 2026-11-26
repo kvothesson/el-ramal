@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>El Ramal</title>
+<title>El Ramal · roguelite de tren fantasma gratis en el navegador</title>
 <meta name="description" content="Un tren fantasma en un ramal cerrado en 1993. Roguelite de pixel art y horror: armá el tren, reabrí los pueblos y llená la cuota antes de que el ramal cierre.">
 <meta property="og:title" content="El Ramal">
 <meta property="og:description" content="Un tren fantasma en un ramal cerrado en 1993. Armá el tren, reabrí los pueblos, llená la cuota.">
@@ -20,9 +20,57 @@ html,body{margin:0;height:100%;overflow:hidden;background:#050408}
 body{display:flex;align-items:center;justify-content:center}
 #screen{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
 #legacy{display:none}
+.sinjs{position:fixed;inset:0;z-index:20;overflow:auto;background:#050408;color:#e8dcc0;font:18px/1.5 monospace;padding:24px 16px;box-sizing:border-box}.sinjs div{max-width:640px;margin:0 auto}.sinjs h1{color:#d8a040;font-size:32px;margin:0 0 12px}.sinjs h2{color:#d8a040;font-size:22px;margin:20px 0 6px}.sinjs a{color:#d8a040}.sinjs .aviso{border-left:3px solid #d8a040;padding-left:10px}
 </style>
+<meta property="og:locale" content="es_AR">
+<meta property="og:site_name" content="Kvothesson">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "VideoGame",
+ "name": "El Ramal",
+ "description": "Un tren fantasma en un ramal cerrado en 1993. Roguelite de pixel art y horror: armá el tren, reabrí los pueblos y llená la cuota antes de que el ramal cierre.",
+ "url": "https://kvothesson.com/el-ramal/",
+ "inLanguage": "es",
+ "genre": [
+  "Roguelite",
+  "Incremental",
+  "Horror",
+  "Pixel art"
+ ],
+ "gamePlatform": "Web browser",
+ "applicationCategory": "Game",
+ "operatingSystem": "Any",
+ "isAccessibleForFree": true,
+ "offers": {
+  "@type": "Offer",
+  "price": "0",
+  "priceCurrency": "USD"
+ },
+ "author": {
+  "@type": "Organization",
+  "name": "Kvothesson",
+  "url": "https://kvothesson.com/"
+ },
+ "publisher": {
+  "@type": "Organization",
+  "name": "Kvothesson",
+  "url": "https://kvothesson.com/"
+ },
+ "image": "https://kvothesson.com/el-ramal/og.png"
+}
+</script>
 </head>
 <body>
+<noscript><div class="sinjs"><div>
+<h1>El Ramal</h1>
+<p>El Ramal es un roguelite incremental de pixel art y horror que se juega gratis en el navegador. Un tren fantasma sigue andando por un ramal que cerró en 1993. El tren no se enteró.</p>
+<h2>Cómo se juega</h2>
+<p>El tren recorre los 8 lugares del ramal y frena en cada pueblo. Ahí los vagones se activan de izquierda a derecha: unos suben carga y otros levantan la presión de la caldera, y en cada parada entregás carga por presión. Si al terminar la vuelta no llenaste la cuota, el ramal cierra. En el taller comprás vagones, los ordenás para que combinen con el de al lado y reabrís un pueblo por vuelta. Cada 4 vueltas sube un inspector con una regla nueva. La meta es la vuelta 16, el Fin de la vía, y después podés seguir sin fin.</p>
+<p>Controles: todo con el mouse (señalá cualquier cosa y abajo se explica qué hace), Esc para pausar y F para pantalla completa. La partida se guarda sola.</p>
+<p>Es un juego de <a href="https://kvothesson.com/">Kvothesson</a>, del Universo Austral. Gratis, sin cuenta y sin instalar nada.</p>
+<p class="aviso">Para jugar hace falta tener JavaScript activado.</p>
+</div></div></noscript>
 <canvas id="screen" width="480" height="270"></canvas>
 <div id="legacy"><div id="carga"></div><div id="mult"></div><div id="bar"></div><div id="barfill"></div><div id="bartxt"></div><div id="rule"></div><div id="train"></div><div id="panel"></div><div id="ovl"></div><div id="ovlc"></div><div id="toast"></div></div>
 <script>
